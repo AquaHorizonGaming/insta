@@ -1,0 +1,8 @@
+flask
+flask-login
+instaloader
+python-dotenv
+ffmpeg-python
+pillow
+bootstrap-flask
+requests
