@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="p-4"><h3>Settings</h3>
+<form method="post" class="row g-3">
+  <div class="col-md-4"><label>Max posts on first fetch</label><input class="form-control" name="max_posts_first_fetch" value="{{ settings.max_posts_first_fetch }}"></div>
+  <div class="col-md-8"><label>Default download directory</label><input class="form-control" name="default_download_directory" value="{{ settings.default_download_directory }}"></div>
+  <div class="col-md-4"><label>Instagram Username</label><input class="form-control" name="instagram_username" value="{{ settings.instagram_username }}"></div>
+  <div class="col-md-4"><label>Instagram Password</label><input class="form-control" type="password" name="instagram_password" value="{{ settings.instagram_password }}"></div>
+  <div class="col-md-4"><label>Pagination size</label><input class="form-control" name="pagination_size" value="{{ settings.pagination_size }}"></div>
+  <div class="col-md-4"><label>Theme</label><select class="form-select" name="theme"><option value="light" {% if settings.theme=='light' %}selected{% endif %}>Light</option><option value="dark" {% if settings.theme=='dark' %}selected{% endif %}>Dark</option></select></div>
+  <div class="col-md-4"><label>Admin password change</label><input class="form-control" type="password" name="admin_password"></div>
+  <div class="col-md-4"><label>Thumbnail generation</label><select class="form-select" name="thumbnail_generation"><option value="1" {% if settings.thumbnail_generation=='1' %}selected{% endif %}>On</option><option value="0" {% if settings.thumbnail_generation=='0' %}selected{% endif %}>Off</option></select></div>
+  <div class="col-md-4"><label>Auto-refresh metadata</label><select class="form-select" name="auto_refresh_metadata"><option value="1" {% if settings.auto_refresh_metadata=='1' %}selected{% endif %}>On</option><option value="0" {% if settings.auto_refresh_metadata=='0' %}selected{% endif %}>Off</option></select></div>
+  <div class="col-md-4"><label>Show downloaded default</label><select class="form-select" name="show_downloaded_default"><option value="1" {% if settings.show_downloaded_default=='1' %}selected{% endif %}>Yes</option><option value="0" {% if settings.show_downloaded_default=='0' %}selected{% endif %}>No</option></select></div>
+  <div class="col-md-4"><label>Show not downloaded default</label><select class="form-select" name="show_not_downloaded_default"><option value="1" {% if settings.show_not_downloaded_default=='1' %}selected{% endif %}>Yes</option><option value="0" {% if settings.show_not_downloaded_default=='0' %}selected{% endif %}>No</option></select></div>
+  <div class="col-md-4"><label>Bulk operations</label><select class="form-select" name="bulk_operations_enabled"><option value="1" {% if settings.bulk_operations_enabled=='1' %}selected{% endif %}>Enabled</option><option value="0" {% if settings.bulk_operations_enabled=='0' %}selected{% endif %}>Disabled</option></select></div>
+  <div class="col-12"><button class="btn btn-primary">Save Settings</button> <a href="/" class="btn btn-secondary">Back</a></div>
+</form></div>
+{% endblock %}

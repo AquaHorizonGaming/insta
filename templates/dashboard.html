@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="row vh-100">
+  <aside class="col-lg-3 border-end p-3 overflow-auto">
+    <h5>Creators</h5>
+    <form method="post" action="{{ url_for('add_creator') }}" class="mb-3 d-flex gap-2">
+      <input class="form-control" name="username" placeholder="instagram username" required>
+      <button class="btn btn-success">Add</button>
+    </form>
+    {% for c in creators %}
+      <div class="card mb-2 creator-card {% if creator_id==c.id %}border-primary{% endif %}">
+        <div class="card-body py-2 d-flex align-items-center justify-content-between">
+          <a href="/?creator_id={{ c.id }}" class="d-flex align-items-center text-decoration-none">
+            <img src="{{ url_for('static', filename=c.profile_pic_path) if c.profile_pic_path else 'https://placehold.co/40' }}" class="avatar me-2"> <div><b>{{ c.display_name }}</b><div class="small text-muted">@{{ c.username }}</div></div>
+          </a>
+          <form method="post" action="{{ url_for('remove_creator', creator_id=c.id) }}" onsubmit="return confirm('Remove creator?')">
+            <input type="hidden" name="delete_media" value="1"><button class="btn btn-sm btn-outline-danger">×</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+    <hr>
+    <nav class="nav flex-column">
+      <a class="nav-link" href="/">Dashboard</a>
+      <a class="nav-link" href="/settings">Settings</a>
+      <a class="nav-link" href="/logs">Logs</a>
+      <a class="nav-link text-danger" href="/logout">Logout</a>
+    </nav>
+  </aside>
+  <main class="col-lg-9 p-3 overflow-auto">
+    {% if creator_id %}
+    <div class="d-flex gap-2 flex-wrap mb-3">
+      <form method="post" action="{{ url_for('refresh_creator', creator_id=creator_id) }}"><button class="btn btn-outline-primary">Fetch New Posts</button></form>
+      <button class="btn btn-primary" onclick="downloadSelected()">Download Selected</button>
+      <button class="btn btn-success" onclick="downloadAllUndownloaded()">Download All Un-downloaded</button>
+      <form method="post" action="/posts/delete_downloads" onsubmit="return confirm('Delete all downloads?')"><input type="hidden" name="creator_id" value="{{ creator_id }}"><button class="btn btn-danger">Delete All Downloads</button></form>
+    </div>
+    <div class="row g-3">
+      {% for p in posts %}
+      <div class="col-md-4 col-sm-6">
+        <div class="card h-100">
+          <img src="{{ url_for('static', filename=p.thumbnail_path) if p.thumbnail_path else 'https://placehold.co/500x500' }}" class="card-img-top thumb">
+          <div class="card-body">
+            <div class="d-flex justify-content-between"><small>{{ p.post_date[:10] }}</small><span class="badge {{ 'text-bg-success' if p.downloaded else 'text-bg-secondary' }}">{{ 'Downloaded' if p.downloaded else 'Not Downloaded' }}</span></div>
+            <p class="small mt-1">{{ (p.audio_track or 'No audio')[:40] }}</p>
+            <p>{{ (p.caption or '')[:80] }}...</p>
+            <input type="checkbox" class="post-check" value="{{ p.id }}"> Select
+            <button class="btn btn-sm btn-outline-primary float-end" data-bs-toggle="modal" data-bs-target="#postModal{{ p.id }}">View</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="postModal{{ p.id }}"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5>{{ p.shortcode }}</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        {% if p.downloaded and p.media_path and p.media_path.endswith('.mp4') %}
+          <video controls class="w-100"><source src="/{{ p.media_path }}"></video>
+        {% elif p.downloaded and p.media_path %}
+          <img src="/{{ p.media_path }}" class="w-100">
+        {% else %}
+          <img src="{{ url_for('static', filename=p.thumbnail_path) if p.thumbnail_path else 'https://placehold.co/900x600' }}" class="w-100">
+        {% endif %}
+        <p class="mt-2"><b>Audio:</b> {{ p.audio_track or 'N/A' }}</p>
+        <p>{{ p.caption }}</p>
+        <p><a href="{{ p.original_url }}" target="_blank">Open Original Post</a></p>
+        <div id="hashtags-{{ p.id }}" class="alert alert-info d-none"></div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-primary" onclick="downloadPost({{ p.id }}, '{{ (p.caption or '')|replace("'", "\\'") }}')">Download</button></div></div></div></div>
+      {% endfor %}
+    </div>
+    {% else %}<p>Select a creator.</p>{% endif %}
+  </main>
+</div>
+{% endblock %}
